@@ -15,7 +15,7 @@
         if (!dom.mobileToolbarTitle) {
             return;
         }
-        dom.mobileToolbarTitle.textContent = "杞高播放器&隐雾藏";
+        dom.mobileToolbarTitle.textContent = "Solara";
     }
 
     function updateMobileOverlayScrim() {

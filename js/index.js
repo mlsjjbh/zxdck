@@ -641,9 +641,9 @@ function buildAudioProxyUrl(url) {
 }
 
 const SOURCE_OPTIONS = [
-    { value: "netease", label: "网抑云音乐" },
+    { value: "netease", label: "网易云音乐" },
     { value: "kuwo", label: "酷我音乐" },
-    { value: "joox", label: "隐雾藏音乐" }
+    { value: "joox", label: "JOOX音乐" }
 ];
 
 function normalizeSource(value) {
@@ -652,10 +652,10 @@ function normalizeSource(value) {
 }
 
 const QUALITY_OPTIONS = [
-    { value: "128", label: "还行音质", description: "能听" },
-    { value: "192", label: "可以音质", description: "好听" },
-    { value: "320", label: "ok音质", description: "夯" },
-    { value: "999", label: "无损音质", description: "这个直接无敌" }
+    { value: "128", label: "标准音质", description: "128 kbps" },
+    { value: "192", label: "高品音质", description: "192 kbps" },
+    { value: "320", label: "极高音质", description: "320 kbps" },
+    { value: "999", label: "无损音质", description: "FLAC" }
 ];
 
 function normalizeQuality(value) {
@@ -1227,7 +1227,7 @@ bootstrapPersistentStorage();
     function updateMediaMetadata() {
         // 依赖现有全局 state.currentSong；已在项目中使用 localStorage 保存/恢复。:contentReference[oaicite:7]{index=7}
         const song = state.currentSong || {};
-        const title = song.name || dom.currentSongTitle?.textContent || '杞高播放器 by 隐雾藏';
+        const title = song.name || dom.currentSongTitle?.textContent || 'Solara';
         const artist = song.artist || dom.currentSongArtist?.textContent || '';
         const artworkUrl = state.currentArtworkUrl || '';
 
@@ -4359,7 +4359,7 @@ function exportPlaylist() {
     try {
         const payload = {
             meta: {
-                app: "Solara",
+                app: "杞高播放器&隐雾藏",
                 version: PLAYLIST_EXPORT_VERSION,
                 exportedAt: new Date().toISOString(),
                 itemCount: state.playlistSongs.length
@@ -4373,7 +4373,7 @@ function exportPlaylist() {
         const formattedTimestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
         const anchor = document.createElement("a");
         anchor.href = url;
-        anchor.download = `杞高小贾&隐雾藏音乐配置${formattedTimestamp}.json`;
+        anchor.download = `电脑小子&隐雾藏${formattedTimestamp}.json`;
         document.body.appendChild(anchor);
         anchor.click();
         document.body.removeChild(anchor);
@@ -4963,7 +4963,7 @@ function exportFavorites() {
     try {
         const payload = {
             meta: {
-                app: "杞高播放器&隐雾藏",
+                app: "杞县高中&隐雾藏",
                 version: FAVORITE_EXPORT_VERSION,
                 exportedAt: new Date().toISOString(),
                 itemCount: favorites.length,
@@ -4978,7 +4978,7 @@ function exportFavorites() {
         const formattedTimestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
         const anchor = document.createElement("a");
         anchor.href = url;
-        anchor.download = `杞高小贾&隐雾藏音乐配置${formattedTimestamp}.json`;
+        anchor.download = `电脑小子&喜欢${formattedTimestamp}.json`;
         document.body.appendChild(anchor);
         anchor.click();
         document.body.removeChild(anchor);

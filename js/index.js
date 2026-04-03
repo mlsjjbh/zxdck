@@ -641,9 +641,9 @@ function buildAudioProxyUrl(url) {
 }
 
 const SOURCE_OPTIONS = [
-    { value: "netease", label: "网易云音乐" },
+    { value: "netease", label: "网抑云音乐" },
     { value: "kuwo", label: "酷我音乐" },
-    { value: "joox", label: "JOOX音乐" }
+    { value: "joox", label: "隐雾藏音乐" }
 ];
 
 function normalizeSource(value) {
@@ -652,10 +652,10 @@ function normalizeSource(value) {
 }
 
 const QUALITY_OPTIONS = [
-    { value: "128", label: "标准音质", description: "128 kbps" },
-    { value: "192", label: "高品音质", description: "192 kbps" },
-    { value: "320", label: "极高音质", description: "320 kbps" },
-    { value: "999", label: "无损音质", description: "FLAC" }
+    { value: "128", label: "还行音质", description: "有点垃圾" },
+    { value: "192", label: "可以音质", description: "能听" },
+    { value: "320", label: "ok音质", description: "夯" },
+    { value: "999", label: "无损音质", description: "小妹妹牛逼克拉斯" }
 ];
 
 function normalizeQuality(value) {
@@ -5627,7 +5627,7 @@ async function exploreOnlineMusic() {
 
         if (!Array.isArray(results) || results.length === 0) {
             showNotification("探索雷达：未找到歌曲", "error");
-            debugLog(`探索雷达未找到歌曲，关键词：${randomGenre}，音源：${source}`);
+            debugLog(`小贾雷达未找到歌曲，关键词：${randomGenre}，小贾：${source}`);
             return;
         }
 
@@ -5660,7 +5660,7 @@ async function exploreOnlineMusic() {
         }
 
         if (appendedSongs.length === 0) {
-            showNotification("探索雷达：本次未找到新的歌曲，当前列表已包含这些曲目", "info");
+            showNotification("小贾雷达：本次未找到新的歌曲，当前列表已包含这些曲目", "info");
             debugLog(`探索雷达无新增歌曲，关键词：${randomGenre}`);
             return;
         }
@@ -5673,8 +5673,8 @@ async function exploreOnlineMusic() {
         renderPlaylist();
         updatePlaylistHighlight();
 
-        showNotification(`探索雷达：新增${appendedSongs.length}首 ${randomGenre} 歌曲`);
-        debugLog(`探索雷达加载成功，关键词：${randomGenre}，音源：${source}，新增歌曲数：${appendedSongs.length}`);
+        showNotification(`小贾雷达：新增${appendedSongs.length}首 ${randomGenre} 歌曲`);
+        debugLog(`小贾雷达加载成功，关键词：${randomGenre}，音源：${source}，新增歌曲数：${appendedSongs.length}`);
 
         const shouldAutoplay = existingSongs.length === 0 && state.playlistSongs.length > 0;
         if (shouldAutoplay) {
@@ -5702,23 +5702,23 @@ async function loadLyrics(song) {
             parseLyrics(lyricData.lyric);
             dom.lyrics.classList.remove("empty");
             dom.lyrics.dataset.placeholder = "default";
-            debugLog(`歌词加载成功: ${state.lyricsData.length} 行`);
+            debugLog(`小贾加载成功: ${state.lyricsData.length} 行`);
         } else {
             setLyricsContentHtml("<div>暂无歌词</div>");
             dom.lyrics.classList.add("empty");
             dom.lyrics.dataset.placeholder = "message";
             state.lyricsData = [];
             state.currentLyricLine = -1;
-            debugLog("歌词加载失败: 无歌词数据");
+            debugLog("小贾说: 无歌词数据");
         }
     } catch (error) {
-        console.error("加载歌词失败:", error);
-        setLyricsContentHtml("<div>歌词加载失败</div>");
+        console.error("加载歌词gg:", error);
+        setLyricsContentHtml("<div>歌词加载gg</div>");
         dom.lyrics.classList.add("empty");
         dom.lyrics.dataset.placeholder = "message";
         state.lyricsData = [];
         state.currentLyricLine = -1;
-        debugLog(`歌词加载失败: ${error}`);
+        debugLog(`歌词加载gg: ${error}`);
     }
 }
 

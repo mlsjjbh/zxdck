@@ -1040,7 +1040,7 @@ html.mobile-view .playlist-header .playlist-action-btn {
 
 /* 播放列表空状态的提示文本 */
 .playlist.empty::before {
-    content: "点击\"探索雷达\"加载在线音乐";
+    content: "点击\"探索雷达\"电脑小子&隐雾藏为你找音乐";
     color: var(--text-secondary-color);
     font-style: italic;
     opacity: 0.7;
@@ -1544,7 +1544,7 @@ html.mobile-view .favorites .favorite-item-action--remove {
 }
 
 .lyrics.empty[data-placeholder="default"] .lyrics-scroll::before {
-    content: "歌词将在此处同步显示";
+    content: "隐雾藏会在这里给你变出歌词";
     color: var(--text-secondary-color);
     font-style: italic;
     opacity: 0.7;

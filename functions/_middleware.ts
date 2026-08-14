@@ -1,4 +1,4 @@
-const PUBLIC_PATH_PATTERNS = [/^\/login(?:\/|$)/, /^\/api\/login(?:\/|$)/];
+const PUBLIC_PATH_PATTERNS = [/^\/login(?:\/|$)/, /^\/api\/login(?:\/|$)/, /^\/proxy(?:\/|$)/];
 const PUBLIC_FILE_EXTENSIONS = new Set([
   ".css",
   ".js",

@@ -67,40 +67,45 @@ async function proxyAudio(targetUrl: string, request: Request): Promise<Response
   const ALLOWED_DOMAINS = [
     "kuwo.cn", "m.kuwo.cn",
     "joox.com", "www.joox.com",
+    "hk.stream.music.joox.com", "tw.stream.music.joox.com",
+    "sg.stream.music.joox.com", "my.stream.music.joox.com",
+    "malaysia.stream.music.joox.com", "thailand.stream.music.joox.com",
+    "indonesia.stream.music.joox.com", "philippines.stream.music.joox.com",
+    "vietnam.stream.music.joox.com", "india.stream.music.joox.com",
     "y.qq.com", "qqmusic.qq.com",
     "music.163.com", "musicplayer.netease.com",
     "ws.stream.qqmusic.qq.com", "ws1.stream.qqmusic.qq.com", "ws2.stream.qqmusic.qq.com",
     "ws3.stream.qqmusic.qq.com", "ws4.stream.qqmusic.qq.com", "ws5.stream.qqmusic.qq.com", "ws6.stream.qqmusic.qq.com",
     "dl.music.163.com",
     "p.music.126.net", "p.music.127.net", "c.music.126.net",
-    "kmusic.kugou.com", "fs-*.kugou.com", "fs.*.kugou.com",
-    "*.cloud.music.163.com", "v*.cloud.music.163.com",
     "cdn.hongkong.joox.com", "cdntxt.joox.com",
+    "kmusic.kugou.com",
   ];
   const hostOk = ALLOWED_DOMAINS.some(d => {
-    if (d.startsWith("*.")) {
-      const suffix = d.slice(2);
-      return parsed.hostname === suffix || parsed.hostname.endsWith("." + suffix);
+    if (d.endsWith(".joox.com")) {
+      return parsed.hostname === d || parsed.hostname.endsWith("." + d);
     }
-    if (d.endsWith(".kugou.com") && d.startsWith("fs-")) {
-      return parsed.hostname.startsWith("fs-") && parsed.hostname.endsWith(".kugou.com");
-    }
-    if (d.endsWith(".kugou.com") && d.startsWith("fs.")) {
-      return parsed.hostname.startsWith("fs.") && parsed.hostname.endsWith(".kugou.com");
-    }
-    if (d.startsWith("v*") && d.endsWith(".cloud.music.163.com")) {
-      return parsed.hostname.endsWith(".cloud.music.163.com") && /^v\d+\./.test(parsed.hostname);
+    if (d.endsWith(".kugou.com")) {
+      return parsed.hostname.endsWith(".kugou.com");
     }
     return parsed.hostname === d;
   });
   if (!hostOk) {
     return new Response("Blocked host: " + parsed.hostname, { status: 400 });
   }
+  // 按目标域名设置合适的 Referer
+  let referer = "https://www.kuwo.cn/";
+  if (parsed.hostname.includes("joox")) referer = "https://www.joox.com/";
+  else if (parsed.hostname.includes("163") || parsed.hostname.includes("126") || parsed.hostname.includes("127"))
+    referer = "https://music.163.com/";
+  else if (parsed.hostname.includes("qqmusic") || parsed.hostname.includes("y.qq"))
+    referer = "https://y.qq.com/";
+
   const init: RequestInit = {
     method: request.method,
     headers: {
       "User-Agent": request.headers.get("User-Agent") ?? "Mozilla/5.0",
-      "Referer": "https://www.kuwo.cn/",
+      "Referer": referer,
     },
   };
   const rangeHeader = request.headers.get("Range");
@@ -110,7 +115,7 @@ async function proxyAudio(targetUrl: string, request: Request): Promise<Response
   const upstream = await fetch(parsed.toString(), init);
   const headers = createCorsHeaders(upstream.headers);
   if (!headers.has("Cache-Control")) {
-    headers.set("Cache-Control", "public, max-age=3600");
+    headers.set("Cache-Control", "no-store");
   }
   return new Response(upstream.body, {
     status: upstream.status,

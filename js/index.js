@@ -890,6 +890,9 @@ function toAbsoluteUrl(url) {
     }
 }
 
+// JOOX 流媒体 CDN 会屏蔽数据中心出口 IP（如 Cloudflare Pages），必须浏览器直连才能播放
+const JOOX_CDN_HOST_RE = /(^|\.)(stream\.music\.joox\.com|cdntxt\.joox\.com|cdn\.hongkong\.joox\.com)$/i;
+
 function buildAudioProxyUrl(url) {
     if (!url || typeof url !== "string") return url;
 
@@ -901,8 +904,19 @@ function buildAudioProxyUrl(url) {
             return parsedUrl.toString();
         }
 
-        // 跨域音频：全部走 proxy
-        return `${API.baseUrl}?target=${encodeURIComponent(parsedUrl.toString())}`;
+        // JOOX CDN 屏蔽数据中心 IP，必须直连（https 页面下把 http 升级为 https 避免混合内容拦截）
+        if (JOOX_CDN_HOST_RE.test(parsedUrl.hostname)) {
+            if (parsedUrl.protocol === "http:" && window.location.protocol === "https:") {
+                parsedUrl.protocol = "https:";
+            }
+            return parsedUrl.toString();
+        }
+
+        // 其余跨域音频：https 直连；http 混合内容（http 页面在 https 站点下被浏览器拦截）走代理
+        if (parsedUrl.protocol === "http:" && window.location.protocol === "https:") {
+            return `${API.baseUrl}?target=${encodeURIComponent(parsedUrl.toString())}`;
+        }
+        return parsedUrl.toString();
     } catch (error) {
         console.warn("无法解析音频地址，跳过代理", error);
         return url;

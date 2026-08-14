@@ -3080,16 +3080,18 @@ function toggleSourceMenu(event) {
 }
 
 function handleSourceSelection(event) {
-    debugLog(`[源选择] handleSourceSelection 触发, target=${event.target.tagName} class="${event.target.className || ""}"`);
+    debugLog(`[源选择] handleSourceSelection 触发, target=${event.target.tagName} class="${event.target.className || ""}" text="${event.target.textContent || ""}"`);
+    debugLog(`[源选择] 点击坐标 clientX=${event.clientX} clientY=${event.clientY}`);
     const option = event.target.closest(".source-option");
     if (!option) {
-        debugLog(`[源选择] 未找到 .source-option`);
+        debugLog(`[源选择] ❌ 未找到 .source-option`);
         return;
     }
     event.preventDefault();
     event.stopPropagation();
     const source = option.dataset.source;
-    debugLog(`[源选择] 点击音源 data-source="${source}", currentSource="${state.searchSource}"`);
+    debugLog(`[源选择] 命中的 .source-option: data-source="${source}", 文本="${option.textContent.trim()}"`);
+    debugLog(`[源选择] menu 元素 top=${dom.sourceMenu.getBoundingClientRect().top}, left=${dom.sourceMenu.getBoundingClientRect().left}, 高度=${dom.sourceMenu.getBoundingClientRect().height}`);
     if (source) {
         selectSearchSource(source);
     }

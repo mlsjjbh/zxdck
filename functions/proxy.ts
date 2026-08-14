@@ -53,10 +53,48 @@ function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
-async function proxyKuwoAudio(targetUrl: string, request: Request): Promise<Response> {
-  const normalized = normalizeKuwoUrl(targetUrl);
-  if (!normalized) {
+async function proxyAudio(targetUrl: string, request: Request): Promise<Response> {
+  let parsed: URL | null = null;
+  try {
+    parsed = new URL(targetUrl);
+  } catch {
     return new Response("Invalid target", { status: 400 });
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    return new Response("Unsupported protocol", { status: 400 });
+  }
+  // 白名单：只允许已知音乐源域名（防止 SSRF）
+  const ALLOWED_DOMAINS = [
+    "kuwo.cn", "m.kuwo.cn",
+    "joox.com", "www.joox.com",
+    "y.qq.com", "qqmusic.qq.com",
+    "music.163.com", "musicplayer.netease.com",
+    "ws.stream.qqmusic.qq.com", "ws1.stream.qqmusic.qq.com", "ws2.stream.qqmusic.qq.com",
+    "ws3.stream.qqmusic.qq.com", "ws4.stream.qqmusic.qq.com", "ws5.stream.qqmusic.qq.com", "ws6.stream.qqmusic.qq.com",
+    "dl.music.163.com",
+    "p.music.126.net", "p.music.127.net", "c.music.126.net",
+    "kmusic.kugou.com", "fs-*.kugou.com", "fs.*.kugou.com",
+    "*.cloud.music.163.com", "v*.cloud.music.163.com",
+    "cdn.hongkong.joox.com", "cdntxt.joox.com",
+  ];
+  const hostOk = ALLOWED_DOMAINS.some(d => {
+    if (d.startsWith("*.")) {
+      const suffix = d.slice(2);
+      return parsed.hostname === suffix || parsed.hostname.endsWith("." + suffix);
+    }
+    if (d.endsWith(".kugou.com") && d.startsWith("fs-")) {
+      return parsed.hostname.startsWith("fs-") && parsed.hostname.endsWith(".kugou.com");
+    }
+    if (d.endsWith(".kugou.com") && d.startsWith("fs.")) {
+      return parsed.hostname.startsWith("fs.") && parsed.hostname.endsWith(".kugou.com");
+    }
+    if (d.startsWith("v*") && d.endsWith(".cloud.music.163.com")) {
+      return parsed.hostname.endsWith(".cloud.music.163.com") && /^v\d+\./.test(parsed.hostname);
+    }
+    return parsed.hostname === d;
+  });
+  if (!hostOk) {
+    return new Response("Blocked host: " + parsed.hostname, { status: 400 });
   }
   const init: RequestInit = {
     method: request.method,
@@ -69,7 +107,7 @@ async function proxyKuwoAudio(targetUrl: string, request: Request): Promise<Resp
   if (rangeHeader) {
     (init.headers as Record<string, string>)["Range"] = rangeHeader;
   }
-  const upstream = await fetch(normalized.toString(), init);
+  const upstream = await fetch(parsed.toString(), init);
   const headers = createCorsHeaders(upstream.headers);
   if (!headers.has("Cache-Control")) {
     headers.set("Cache-Control", "public, max-age=3600");
@@ -413,7 +451,7 @@ export async function onRequest({ request, env }: { request: Request; env: Playl
   const target = url.searchParams.get("target");
   const neteaseCookie = env?.NETEASE_COOKIE || "";
 
-  if (target) return proxyKuwoAudio(target, request);
+  if (target) return proxyAudio(target, request);
 
   const types = url.searchParams.get("types");
   if (types === "playlist") return fetchPlaylist(url, request, neteaseCookie);

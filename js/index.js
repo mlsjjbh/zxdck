@@ -895,15 +895,14 @@ function buildAudioProxyUrl(url) {
 
     try {
         const parsedUrl = new URL(url, window.location.href);
-        if (parsedUrl.protocol === "https:") {
+
+        // 同域或纯相对路径：无需代理
+        if (parsedUrl.host === window.location.host || parsedUrl.protocol === "about:" || parsedUrl.protocol === "blob:") {
             return parsedUrl.toString();
         }
 
-        if (parsedUrl.protocol === "http:" && /(^|\.)kuwo\.cn$/i.test(parsedUrl.hostname)) {
-            return `${API.baseUrl}?target=${encodeURIComponent(parsedUrl.toString())}`;
-        }
-
-        return parsedUrl.toString();
+        // 跨域音频：全部走 proxy
+        return `${API.baseUrl}?target=${encodeURIComponent(parsedUrl.toString())}`;
     } catch (error) {
         console.warn("无法解析音频地址，跳过代理", error);
         return url;

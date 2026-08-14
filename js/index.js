@@ -911,9 +911,8 @@ function buildAudioProxyUrl(url) {
 }
 
 const SOURCE_OPTIONS = [
-    { value: "netease", label: "抑郁音乐" },
-    { value: "kuwo", label: "酷狗音乐音乐" },
-    { value: "joox", label: "隐雾藏音乐" }
+    { value: "netease", label: "网易云音乐" },
+    { value: "joox", label: "JOOX (QQ音乐国际版)" }
 ];
 
 function normalizeSource(value) {
@@ -7034,7 +7033,7 @@ function pickRandomExploreGenre() {
     return EXPLORE_RADAR_GENRES[index];
 }
 
-const EXPLORE_RADAR_SOURCES = ["netease", "kuwo"];
+const EXPLORE_RADAR_SOURCES = ["netease", "joox"];
 
 function pickRandomExploreSource() {
     if (!Array.isArray(EXPLORE_RADAR_SOURCES) || EXPLORE_RADAR_SOURCES.length === 0) {

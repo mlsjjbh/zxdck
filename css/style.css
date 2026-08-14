@@ -2312,6 +2312,7 @@ input[type="range"]:active::-moz-range-thumb {
     max-height: 40vh;
     overflow-y: auto;
     display: none;
+    pointer-events: none;
 }
 
 .debug-info.show {

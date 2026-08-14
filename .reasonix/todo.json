@@ -25,7 +25,7 @@
   {
     "phase": "4. 推送到 GitHub",
     "steps": [
-      {"name": "git add, commit, push", "status": "in_progress"}
+      {"name": "git add, commit, push", "status": "completed"}
     ]
   }
 ]

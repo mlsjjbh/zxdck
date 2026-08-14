@@ -2985,6 +2985,7 @@ function buildSourceMenu() {
         `;
     }).join("");
     dom.sourceMenu.innerHTML = optionsHtml;
+    debugLog(`[源选择] buildSourceMenu 渲染了 ${SOURCE_OPTIONS.length} 个选项: ${SOURCE_OPTIONS.map(o => o.value).join(", ")}`);
     if (state.sourceMenuOpen) {
         scheduleSourceMenuPositionUpdate();
     }
@@ -3079,11 +3080,16 @@ function toggleSourceMenu(event) {
 }
 
 function handleSourceSelection(event) {
+    debugLog(`[源选择] handleSourceSelection 触发, target=${event.target.tagName} class="${event.target.className || ""}"`);
     const option = event.target.closest(".source-option");
-    if (!option) return;
+    if (!option) {
+        debugLog(`[源选择] 未找到 .source-option`);
+        return;
+    }
     event.preventDefault();
     event.stopPropagation();
-    const { source } = option.dataset;
+    const source = option.dataset.source;
+    debugLog(`[源选择] 点击音源 data-source="${source}", currentSource="${state.searchSource}"`);
     if (source) {
         selectSearchSource(source);
     }
@@ -3091,8 +3097,9 @@ function handleSourceSelection(event) {
 
 function selectSearchSource(source) {
     const normalized = normalizeSource(source);
-    debugLog(`切换音源: ${source} → ${normalized}`);
+    debugLog(`[源选择] selectSearchSource: 输入="${source}", 归一化="${normalized}", 当前="${state.searchSource}"`);
     if (normalized === state.searchSource) {
+        debugLog(`[源选择] 已是当前音源，关闭菜单`);
         closeSourceMenu();
         return;
     }
@@ -3101,7 +3108,7 @@ function selectSearchSource(source) {
     updateSourceLabel();
     buildSourceMenu();
     closeSourceMenu();
-    debugLog(`当前音源已切换为: ${state.searchSource}`);
+    debugLog(`[源选择] ✅ 已切换为: ${state.searchSource}`);
 }
 
 function buildQualityMenu() {

@@ -3091,6 +3091,7 @@ function handleSourceSelection(event) {
 
 function selectSearchSource(source) {
     const normalized = normalizeSource(source);
+    debugLog(`切换音源: ${source} → ${normalized}`);
     if (normalized === state.searchSource) {
         closeSourceMenu();
         return;
@@ -3100,6 +3101,7 @@ function selectSearchSource(source) {
     updateSourceLabel();
     buildSourceMenu();
     closeSourceMenu();
+    debugLog(`当前音源已切换为: ${state.searchSource}`);
 }
 
 function buildQualityMenu() {

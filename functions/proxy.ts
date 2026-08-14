@@ -64,32 +64,27 @@ async function proxyAudio(targetUrl: string, request: Request): Promise<Response
     return new Response("Unsupported protocol", { status: 400 });
   }
   // 白名单：只允许已知音乐源域名（防止 SSRF）
-  const ALLOWED_DOMAINS = [
+  // 通配域名：music.126.net、music.163.com、stream.music.joox.com 等
+  const ALLOWED_HOST_PREFIXES = [
+    "music.126.net", "music.127.net", "music.163.com", "music.126.com",
+    "stream.music.joox.com",
+    "p.music.126.net", "p.music.127.net", "p.music.163.com",
+    "c.music.126.net", "c.music.127.net",
+    "pic.music.126.net",
+  ];
+  const ALLOWED_HOST_EXACT = [
     "kuwo.cn", "m.kuwo.cn",
     "joox.com", "www.joox.com",
-    "hk.stream.music.joox.com", "tw.stream.music.joox.com",
-    "sg.stream.music.joox.com", "my.stream.music.joox.com",
-    "malaysia.stream.music.joox.com", "thailand.stream.music.joox.com",
-    "indonesia.stream.music.joox.com", "philippines.stream.music.joox.com",
-    "vietnam.stream.music.joox.com", "india.stream.music.joox.com",
     "y.qq.com", "qqmusic.qq.com",
     "music.163.com", "musicplayer.netease.com",
     "ws.stream.qqmusic.qq.com", "ws1.stream.qqmusic.qq.com", "ws2.stream.qqmusic.qq.com",
     "ws3.stream.qqmusic.qq.com", "ws4.stream.qqmusic.qq.com", "ws5.stream.qqmusic.qq.com", "ws6.stream.qqmusic.qq.com",
     "dl.music.163.com",
-    "p.music.126.net", "p.music.127.net", "c.music.126.net",
     "cdn.hongkong.joox.com", "cdntxt.joox.com",
     "kmusic.kugou.com",
   ];
-  const hostOk = ALLOWED_DOMAINS.some(d => {
-    if (d.endsWith(".joox.com")) {
-      return parsed.hostname === d || parsed.hostname.endsWith("." + d);
-    }
-    if (d.endsWith(".kugou.com")) {
-      return parsed.hostname.endsWith(".kugou.com");
-    }
-    return parsed.hostname === d;
-  });
+  const hostOk = ALLOWED_HOST_EXACT.includes(parsed.hostname) ||
+    ALLOWED_HOST_PREFIXES.some(prefix => parsed.hostname === prefix || parsed.hostname.endsWith("." + prefix));
   if (!hostOk) {
     return new Response("Blocked host: " + parsed.hostname, { status: 400 });
   }

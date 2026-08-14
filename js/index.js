@@ -3001,22 +3001,35 @@ function updateSourceLabel() {
     dom.sourceSelectButton.setAttribute("title", `音源：${option.label}`);
 }
 
+function ensureSourceMenuPortal() {
+    if (!dom.sourceMenu || !document.body) {
+        return;
+    }
+    const currentParent = dom.sourceMenu.parentElement;
+    if (!currentParent || currentParent === document.body) {
+        return;
+    }
+    currentParent.removeChild(dom.sourceMenu);
+    document.body.appendChild(dom.sourceMenu);
+}
+
 function updateSourceMenuPosition() {
     if (!state.sourceMenuOpen || !dom.sourceMenu || !dom.sourceSelectButton) return;
 
     const menu = dom.sourceMenu;
     const button = dom.sourceSelectButton;
     const spacing = 10;
-    const buttonWidth = Math.ceil(button.getBoundingClientRect().width);
+    const buttonRect = button.getBoundingClientRect();
+    const buttonWidth = Math.ceil(buttonRect.width);
     const effectiveWidth = Math.max(buttonWidth, 140);
 
-    menu.style.left = "0px";
+    menu.style.position = "fixed";
+    menu.style.left = `${Math.round(buttonRect.left)}px`;
     menu.style.width = `${effectiveWidth}px`;
     menu.style.minWidth = `${effectiveWidth}px`;
     menu.style.maxWidth = `${effectiveWidth}px`;
 
     const menuHeight = Math.max(menu.scrollHeight, 0);
-    const buttonRect = button.getBoundingClientRect();
     const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
     const spaceBelow = Math.max(viewportHeight - buttonRect.bottom - spacing, 0);
     const canOpenUpwards = buttonRect.top - spacing - menuHeight >= 0;
@@ -3025,13 +3038,13 @@ function updateSourceMenuPosition() {
     if (shouldOpenUpwards) {
         menu.classList.add("open-upwards");
         menu.classList.remove("open-downwards");
-        menu.style.top = "";
-        menu.style.bottom = `${button.offsetHeight + spacing}px`;
+        menu.style.top = "auto";
+        menu.style.bottom = `${Math.round(viewportHeight - buttonRect.top + spacing)}px`;
     } else {
         menu.classList.add("open-downwards");
         menu.classList.remove("open-upwards");
-        menu.style.bottom = "";
-        menu.style.top = `${button.offsetHeight + spacing}px`;
+        menu.style.bottom = "auto";
+        menu.style.top = `${Math.round(buttonRect.bottom + spacing)}px`;
     }
 }
 
@@ -3044,12 +3057,14 @@ function resetSourceMenuPosition() {
     dom.sourceMenu.style.minWidth = "";
     dom.sourceMenu.style.maxWidth = "";
     dom.sourceMenu.style.width = "";
+    dom.sourceMenu.style.position = "";
 }
 
 function openSourceMenu() {
     if (!dom.sourceMenu || !dom.sourceSelectButton) return;
     state.sourceMenuOpen = true;
     ensureFloatingMenuListeners();
+    ensureSourceMenuPortal();
     buildSourceMenu();
     dom.sourceMenu.classList.add("show");
     dom.sourceSelectButton.classList.add("active");
@@ -3648,6 +3663,7 @@ function setupInteractions() {
     updateSourceLabel();
     buildQualityMenu();
     ensureQualityMenuPortal();
+    ensureSourceMenuPortal();
     initializePlaylistEventHandlers();
     initializeFavoritesEventHandlers();
     updateQualityLabel();

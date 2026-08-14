@@ -296,7 +296,7 @@ body.background-transitioning .background-stage__layer--transition {
 }
 
 .source-menu {
-    position: absolute;
+    position: fixed;
     top: calc(100% + 10px);
     left: 0;
     right: auto;
